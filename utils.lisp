@@ -3,11 +3,11 @@
   (:documentation "Various useful and useless utils.")
   (:use #:cl)
   (:export #:queue-push #:queue-pop #:queue-front #:queue-back
-           #:queue-make #:queue-length #:queue-empty-p))
+           #:make-queue #:queue-length #:queue-empty-p))
 
 (in-package :things.utils)
 
-(defun queue-make ()
+(defun make-queue ()
   (cons nil nil))
 
 (defun queue-push (queue item)
