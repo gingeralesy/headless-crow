@@ -4,6 +4,6 @@
   :author "Janne"
   :long-description "This is experiments in Lisp"
   :description "Experiments with CL"
-  :components ((:file "utils"))
+  :components ((:file "utils") (:file "queens"))
   :depends-on ())
 
