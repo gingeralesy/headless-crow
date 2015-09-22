@@ -24,12 +24,13 @@
 
 (defun valid-p (k positions)
   "Checks if this is a valid position for the next queen."
-  (dotimes (i (1- k))
-    (let ((qi (elt positions i)))
-      (when (or (= qi (elt positions k))
-                (= (abs (- qi (elt positions k)))
-                   (abs (- i k))))
-        (return-from valid-p nil))))
+  (let ((qk (elt positions k)))
+    (dotimes (i k)
+      (let ((qi (elt positions i)))
+        (when (or (= qi qk)
+                  (= (abs (- qi qk))
+                     (abs (- i k))))
+          (return-from valid-p nil)))))
   t)
 
 (defun find-positions (n)
