@@ -40,14 +40,14 @@
           do
           (loop while (and (< k n) (not (valid-p k positions)))
                 do
-                (incf (elt positions k)))
+                (incf (elt positions k))) ;; Move rightwards until a good position is found
           (when (and (= k (1- n)) (< (elt positions k) n))
-            (return-from find-positions positions))
+            (return-from find-positions positions)) ;; All is good, return
           (if (and (< k (1- n)) (< (elt positions k) n))
-              (incf k)
+              (incf k) ;; Not done yet, move ahead
               (progn
-                (decf k)
-                (if (< k 0)
+                (decf k) ;; Something is wrong, backtrack
+                (if (< k 0) ;; Went too far, no positions here
                     (return-from find-positions nil)
                     (incf (elt positions k)))))))
   nil)
