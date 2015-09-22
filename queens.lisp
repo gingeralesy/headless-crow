@@ -6,30 +6,48 @@
 
 (in-package :things.queens)
 
+;; Public
+
 (defun queens (n)
+  "Finds and prints out a possible positioning of N queens on an N by N board."
   (format t "Finding ~a queens.~%" n)
-  (let ((positions ()))
-    (dotimes (i n)
-      (push (find-position positions n) positions))
-    (if (= (length positions) n)
-        (format t "Positions: ~a~%" positions)
-        (format t "No available positions."))))
+  (let ((positions (find-positions n)))
+    (format t "Positions:~%")
+    (if positions
+        (loop for p being the elements of positions
+              do
+              (dotimes (i p) (format t " *"))
+              (format t " Q")
+              (dotimes (i (- n p)) (format t " *"))
+              (format t "~%"))
+        (format t "No available positions.~%"))))
 
-(defun collision-p (xy1 xy2)
-  (let ((x1 (first xy1)) (y1 (second xy1))
-        (x2 (first xy2)) (y2 (second xy2)))
-    (or (= x1 x2) (= y1 y2) (= (- y2 y1) (- x2 x1)))))
+(defun valid-p (k positions)
+  "Checks if this is a valid position for the next queen."
+  (dotimes (i (1- k))
+    (let ((qi (elt positions i)))
+      (when (or (= qi k)
+              (= (abs (- qi (elt positions k)))
+                 (abs (- i k))))
+        (return-from valid-p nil))))
+  t)
 
-(defun find-position (positions n)
-  (if (> (length positions) 0)
-      (dotimes (x n)
-        (dotimes (y n)
-          (let ((collided nil))
-            (block find-collides
-              (loop for pos in positions
-                    do
-                    (setf collided (collision-p (list x y) pos))
-                    (when collided (return-from find-collides))))
-            (when (not collided)
-              (return-from find-position (list x y))))))
-      (return-from find-position (list 0 0))))
+(defun find-positions (n)
+  "Finds the valid positions."
+  (let ((positions (make-array n :initial-element 0)))
+    (loop for k from 0
+          while (< k n)
+          do
+          (loop while (and (< k n) (not (valid-p k positions)))
+                do
+                (setf (elt positions k) (1+ (elt positions k))))
+          (when (and (= k (1- n)) (< (elt positions k) n))
+            (return-from find-positions positions))
+          (if (and (< k (1- n)) (< (elt positions k) n))
+              (incf k)
+              (progn
+                (decf k)
+                (if (< k 0)
+                    (return-from find-positions nil)
+                    (setf (elt positions k) (1+ (elt positions k))))))))
+  nil)
