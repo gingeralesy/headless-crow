@@ -2,16 +2,28 @@
 (defpackage :things.twist
   (:documentation "Mersenne Twister")
   (:use #:cl)
-  (:export #:twist))
+  (:export #:random-double #:random-int))
 
 (in-package :things.twist)
 
 ;; Public
 
-(defun twist ()
+(defun random-double ()
   (when (not *initialized*)
     (initialize (get-universal-time)))
   (* (ash (genrand-int) -11) (/ 1.0 9007199254740992.0)))
+
+(defun random-int ()
+  "Generates a random 64-bit integer."
+  (when (>= *twister-index* *recurrence-degree*)
+    (do-the-twist)) ;; yeaaah
+  (let ((y (elt *twister-state* *twister-index*)))
+    (setf y (logxor y (logand (ash y -29) #x5555555555555555)))
+    (setf y (logxor y (logand (ash y 17) #x71D67FFFEDA60000)))
+    (setf y (logxor y (logand (ash y 37) #xFFF7EEE000000000)))
+    (setf y (logxor y (ash y -43)))
+    (incf *twister-index*)
+    (to-64-bits y)))
 
 ;; Private
 
@@ -59,15 +71,3 @@
                          (mod (+ i *middle-word*) *recurrence-degree*))
                     yA))))
   (setf *twister-index* 0))
-
-(defun genrand-int ()
-  (when (>= *twister-index* *recurrence-degree*)
-    (do-the-twist)) ;; yeaaah
-  (let ((y (elt *twister-state* *twister-index*)))
-    (setf y (logxor y (logand (ash y -29) #x5555555555555555)))
-    (setf y (logxor y (logand (ash y 17) #x71D67FFFEDA60000)))
-    (setf y (logxor y (logand (ash y 37) #xFFF7EEE000000000)))
-    (setf y (logxor y (ash y -43)))
-    (incf *twister-index*)
-    (to-64-bits y)))
-
