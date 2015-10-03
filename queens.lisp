@@ -14,40 +14,33 @@
   (let ((positions (find-positions n)))
     (format t "Positions:~%")
     (if positions
-        (loop for p being the elements of positions
-              do
-              (dotimes (i p) (format t " *"))
-              (format t " Q")
-              (dotimes (i (- n (1+ p))) (format t " *"))
-              (format t "~%"))
+        (loop for p across positions
+              do (format t "~v@{ *~} Q~v@{ *~}~%" p (- n (1+ p)) NIL))
         (format t "No available positions.~%"))))
 
 (defun valid-p (k positions)
   "Checks if this is a valid position for the next queen."
   (let ((qk (elt positions k)))
-    (dotimes (i k)
+    (dotimes (i k T)
       (let ((qi (elt positions i)))
         (when (or (= qi qk)
                   (= (abs (- qi qk))
                      (abs (- i k))))
-          (return-from valid-p nil)))))
-  t)
+          (return NIL))))))
 
 (defun find-positions (n)
   "Finds the valid positions."
   (let ((positions (make-array n :initial-element 0)) (k 0))
     (loop while (< k n)
-          do
-          (loop while (and (< k n) (not (valid-p k positions)))
-                do
-                (incf (elt positions k))) ;; Move rightwards until a good position is found
-          (when (and (= k (1- n)) (< (elt positions k) n))
-            (return-from find-positions positions)) ;; All is good, return
-          (if (and (< k (1- n)) (< (elt positions k) n))
-              (incf k) ;; Not done yet, move ahead
-              (progn
-                (decf k) ;; Something is wrong, backtrack
-                (if (< k 0) ;; Went too far, no positions here
-                    (return-from find-positions nil)
+          do (loop while (and (< k n) (not (valid-p k positions)))
+                   ;; Move rightwards until a good position is found
+                   do (incf (elt positions k)))
+             (cond ((and (= k (1- n)) (< (elt positions k) n))
+                    (return positions))
+                   ((and (< k (1- n)) (< (elt positions k) n))
+                    (incf k))
+                   ((< k 1)
+                    (return NIL))
+                   (T
+                    (decf k)
                     (incf (elt positions k)))))))
-  nil)
