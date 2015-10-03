@@ -19,6 +19,12 @@
   (when (>= *twister-index* *recurrence-degree*)
     (do-the-twist)) ;; yeaaah
   (let ((y (elt *twister-state* *twister-index*)))
+    ;; There's some magic here.
+    ;; What these values are, are tempering bitmasks for "Twisted Generalised
+    ;; Feedbash Shift Register". The last two sets are Mersenne Twister specific
+    ;; masks (consider the last one to have logand with #xFFFFFFFFFFFFFFFF).
+    ;; First two are from more general cases. And this somehow causes seemingly
+    ;; random values to appear.
     (setf y (logxor y (logand (ash y -29) #x5555555555555555)))
     (setf y (logxor y (logand (ash y 17) #x71D67FFFEDA60000)))
     (setf y (logxor y (logand (ash y 37) #xFFF7EEE000000000)))
