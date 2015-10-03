@@ -9,9 +9,10 @@
 ;; Public
 
 (defun random-double ()
+  "Generates a random double between [0,1["
   (when (not *initialized*)
     (initialize (get-universal-time)))
-  (* (ash (genrand-int) -11) (/ 1.0 9007199254740992.0)))
+  (* (ash (random-int) -11) (/ 1.0 9007199254740992.0)))
 
 (defun random-int ()
   "Generates a random 64-bit integer."
@@ -42,9 +43,11 @@
 (defvar *twister-index* *recurrence-degree*)
 
 (defun to-64-bits (value)
+  "Ensures that the value does not exceed 64 bits."
   (logand value #xFFFFFFFFFFFFFFFF))
 
 (defun initialize (seed)
+  "Initializes the Mersenne Twister state."
   (setf *twister-index* *recurrence-degree*)
   (setf (elt *twister-state* 0) seed)
   (dotimes (i (1- *recurrence-degree*)) ;; eh, find a better way to start from 1
@@ -57,6 +60,7 @@
   (setf *initialized* T))
 
 (defun do-the-twist ()
+  "Fills the Mersenne Twister state with new values."
   (dotimes (i *recurrence-degree*)
     (let* ((y (to-64-bits
                (+ (logand (elt *twister-state* i) *upper-mask*)
