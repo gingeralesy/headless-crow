@@ -40,7 +40,10 @@
                    ((and (< k (1- n)) (< (elt positions k) n))
                     (incf k))
                    ((< k 1)
+                    ;; Welp, no solutions
                     (return NIL))
                    (T
+                    ;; Go back a bit
+                    (setf (elt positions k) 0)
                     (decf k)
                     (incf (elt positions k)))))))
