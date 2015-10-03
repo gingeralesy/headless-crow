@@ -69,7 +69,7 @@
                           *lower-mask*))))
            (yA (ash y -1)))
       (when (not (= (mod y 2) 0))
-        (setf yA (logxor yA #xB5026F5AA96619E9)))
+        (setf yA (logxor yA *matrix-a*)))
       (setf (elt *twister-state* i)
             (logxor (elt *twister-state*
                          (mod (+ i *middle-word*) *recurrence-degree*))
