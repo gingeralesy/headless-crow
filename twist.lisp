@@ -50,13 +50,14 @@
   "Initializes the Mersenne Twister state."
   (setf *twister-index* *recurrence-degree*)
   (setf (elt *twister-state* 0) seed)
-  (dotimes (i (1- *recurrence-degree*)) ;; eh, find a better way to start from 1
-    (setf (elt *twister-state* (1+ i))
-          (to-64-bits
-           (+ (1+ i)
-              (* *initialization-multiplier*
-                 (logxor (elt *twister-state* i)
-                         (ash (elt *twister-state* i) -30)))))))
+  (dotimes (prev-index (1- *recurrence-degree*))
+    (let ((index (1+ prev-index))) ;; Must be a better way to get index
+      (setf (elt *twister-state* index)
+            (to-64-bits
+             (+ index
+                (* *initialization-multiplier*
+                   (logxor (elt *twister-state* prev-index)
+                           (ash (elt *twister-state* prev-index) -30))))))))
   (setf *initialized* T))
 
 (defun do-the-twist ()
