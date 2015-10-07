@@ -6,7 +6,6 @@
   :description "Experiments with CL"
   :components ((:file "utils")
                (:file "queens")
-               (:file "twist")
-               (:file "my-cffi"))
+               (:file "twist"))
   :depends-on (:cffi))
 
